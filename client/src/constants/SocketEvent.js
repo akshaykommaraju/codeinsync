@@ -1,5 +1,3 @@
-// client/src/constants/SocketEvent.js
-
 export const SocketEvent = {
     JOIN_ROOM: "join_room",
     LEAVE_ROOM: "leave_room",

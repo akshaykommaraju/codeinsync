@@ -8,30 +8,35 @@ import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { SocketEvent } from "./types/socket.js";   // ✅ add .js extension
-import { USER_CONNECTION_STATUS } from "./types/user.js"; // ✅ add .js extension
+import { SocketEvent } from "./types/socket.js";   
+import { USER_CONNECTION_STATUS } from "./types/user.js"; 
 
 dotenv.config();
-
-// Fix __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.use(express.json());
-app.use(cors());
-app.use(express.static(path.join(__dirname, "public"))); // Serve static files
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://localhost:5173",
+  "http://localhost:5174",
+];
+if (CLIENT_ORIGIN) allowedOrigins.push(CLIENT_ORIGIN);
 
-// Create HTTP server
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+app.use(express.static(path.join(__dirname, "public")));
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://localhost:5173",
-      "http://localhost:5174",
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -59,8 +64,6 @@ function getUserBySocketId(socketId) {
 
 io.on("connection", (socket) => {
   console.log(`✅ User connected: ${socket.id}`);
-
-  // --- all your SocketEvent handlers stay the same ---
   socket.on(SocketEvent.JOIN_REQUEST, ({ roomId, username }) => {
     const existingUsersInRoom = getUsersInRoom(roomId);
     const isUsernameExist = existingUsersInRoom.some(
@@ -105,8 +108,6 @@ io.on("connection", (socket) => {
       socket.leave(user.roomId);
     }
   });
-
-  // 👉 keep the rest of your event handlers (FILES, CHAT, CURSOR, DRAWING)
 });
 
 const PORT = process.env.PORT || 3000;

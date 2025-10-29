@@ -1,3 +1,4 @@
+import logo from "@/assets/logo.svg"
 import illustration from "@/assets/illustration.svg"
 import FormComponent from "@/components/forms/FormComponent"
 // import Footer from "@/components/common/Footer";
@@ -9,12 +10,14 @@ function HomePage() {
                 <div className="flex w-full animate-up-down justify-center sm:w-1/2 sm:pl-4">
                     <img
                         src={illustration}
-                        alt="Code Sync Illustration"
-                        className="mx-auto w-[250px] sm:w-[400px]"
+                        alt="Home illustration"
+                        className="mx-auto w-[320px] sm:w-[560px]"
                     />
                 </div>
                 <div className="flex w-full items-center justify-center sm:w-1/2">
-                    <FormComponent />
+                    <div className="flex w-full max-w-[500px] flex-col items-center gap-6 p-4 sm:p-8">
+                        <FormComponent />
+                    </div>
                 </div>
             </div>
             {/* <Footer /> */}
@@ -23,3 +26,4 @@ function HomePage() {
 }
 
 export default HomePage
+

@@ -51,5 +51,4 @@ function RenameView({ id, preName, type, setEditing }) {
         />
     )
 }
-
 export default RenameView

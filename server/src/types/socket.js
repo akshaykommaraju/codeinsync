@@ -1,9 +1,5 @@
 const { Socket } = require("socket.io");
 
-// Just a string alias in TS → no need in JS
-// type SocketId = string
-
-// Enum in JS → plain object
 const SocketEvent = {
   JOIN_REQUEST: "join-request",
   JOIN_ACCEPTED: "join-accepted",
@@ -31,9 +27,6 @@ const SocketEvent = {
   DRAWING_UPDATE: "drawing-update",
 };
 
-// Interface in TS → just comment in JS
-// interface SocketContext {
-//   socket: Socket
-// }
+
 
 module.exports = { SocketEvent };
