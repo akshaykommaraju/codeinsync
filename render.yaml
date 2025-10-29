@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: codeinsync-server
+    rootDirectory: server
+    env: node
+    plan: free
+    region: oregon
+    autoDeploy: true
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: CLIENT_ORIGIN
+        value: ""
