@@ -1,7 +1,7 @@
 services:
   - type: web
     name: codeinsync-server
-    rootDirectory: server
+    rootDir: server
     env: node
     plan: free
     region: oregon
@@ -10,4 +10,4 @@ services:
     startCommand: npm start
     envVars:
       - key: CLIENT_ORIGIN
-        value: ""
+        sync: false
