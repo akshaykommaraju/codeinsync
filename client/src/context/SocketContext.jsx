@@ -26,13 +26,84 @@ const SocketProvider = ({ children }) => {
         drawingData,
         setDrawingData,
     } = useAppContext()
-    const socket = useMemo(
-        () =>
-            io(BACKEND_URL, {
-                reconnectionAttempts: 2,
-            }),
-        [],
-    )
+    const socket = useMemo(() => {
+        const socketInstance = io(BACKEND_URL, {
+            withCredentials: true,
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000,
+            autoConnect: true,
+            transports: ['websocket', 'polling'],
+            upgrade: true,
+            forceNew: true,
+            path: '/socket.io/',
+            query: {},
+            extraHeaders: {}
+        });
+
+        // Connection status handlers
+        const onConnect = () => {
+            console.log('✅ Socket connected:', socketInstance.id);
+            setStatus('connected');
+        };
+
+        const onDisconnect = (reason) => {
+            console.log('❌ Socket disconnected:', reason);
+            if (reason === 'io server disconnect') {
+                // Reconnect manually
+                socketInstance.connect();
+            }
+            setStatus('disconnected');
+        };
+
+        const onError = (error) => {
+            console.error('❌ Socket error:', error);
+            setStatus('error');
+        };
+
+        const onReconnectAttempt = (attemptNumber) => {
+            console.log(`♻️ Reconnection attempt ${attemptNumber}`);
+            setStatus('reconnecting');
+        };
+
+        const onReconnect = (attemptNumber) => {
+            console.log(`✅ Reconnected after ${attemptNumber} attempts`);
+            setStatus('reconnected');
+        };
+
+        const onReconnectError = (error) => {
+            console.error('❌ Reconnection error:', error);
+            setStatus('reconnect_error');
+        };
+
+        const onReconnectFailed = () => {
+            console.error('❌ Reconnection failed');
+            setStatus('reconnect_failed');
+        };
+
+        // Setup event listeners
+        socketInstance.on('connect', onConnect);
+        socketInstance.on('disconnect', onDisconnect);
+        socketInstance.on('connect_error', onError);
+        socketInstance.on('reconnect_attempt', onReconnectAttempt);
+        socketInstance.on('reconnect', onReconnect);
+        socketInstance.on('reconnect_error', onReconnectError);
+        socketInstance.on('reconnect_failed', onReconnectFailed);
+
+        // Cleanup function
+        return () => {
+            socketInstance.off('connect', onConnect);
+            socketInstance.off('disconnect', onDisconnect);
+            socketInstance.off('connect_error', onError);
+            socketInstance.off('reconnect_attempt', onReconnectAttempt);
+            socketInstance.off('reconnect', onReconnect);
+            socketInstance.off('reconnect_error', onReconnectError);
+            socketInstance.off('reconnect_failed', onReconnectFailed);
+            socketInstance.close();
+        };
+    }, [setStatus]);
 
     const handleError = useCallback(
         (err) => {
