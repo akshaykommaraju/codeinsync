@@ -6,6 +6,7 @@ import fs from "fs";
 import http from "http";
 import { Server } from "socket.io";
 import path from "path";
+import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 
 import { SocketEvent } from "./types/socket.js";   
@@ -110,12 +111,24 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Listening on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("✅ Connected to MongoDB");
+
+    httpServer.listen(PORT, () => {
+      console.log(`🚀 Listening on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error(`❌ MongoDB connection error: ${err}`);
+    process.exit(1);
+  }
+};
+
+startServer();

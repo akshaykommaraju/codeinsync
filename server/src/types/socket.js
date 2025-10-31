@@ -1,6 +1,4 @@
-const { Socket } = require("socket.io");
-
-const SocketEvent = {
+export const SocketEvent = {
   JOIN_REQUEST: "join-request",
   JOIN_ACCEPTED: "join-accepted",
   USER_JOINED: "user-joined",
@@ -26,7 +24,3 @@ const SocketEvent = {
   SYNC_DRAWING: "sync-drawing",
   DRAWING_UPDATE: "drawing-update",
 };
-
-
-
-module.exports = { SocketEvent };
